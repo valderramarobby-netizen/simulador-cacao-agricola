@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Simulador Agrícola</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+.contenedor{
+max-width:800px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 15px rgba(0,0,0,0.2);
+}
+
+h1{
+text-align:center;
+color:green;
+}
+
+label{
+font-weight:bold;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:green;
+color:white;
+border:none;
+border-radius:5px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0a8a0a;
+}
+
+.resultado{
+margin-top:20px;
+font-size:18px;
+line-height:1.8;
+}
+
+canvas{
+margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>Simulador Agrícola</h1>
+
+<label>Metros de cerca disponibles (P)</label>
+
+<input
+type="number"
+id="perimetro"
+placeholder="Ejemplo: 400">
+
+<button onclick="calcular()">
+Calcular
+</button>
+
+<div id="resultado" class="resultado"></div>
+
+<canvas id="miGrafica"></canvas>
+  <p>Grafica</p>
+
+</div>
+
+<script>
+
+let grafica = null;
+
+function calcular(){
+
+let P = parseFloat(
+document.getElementById("perimetro").value
+);
+
+if(isNaN(P) || P <= 0){
+
+alert("Ingrese un valor válido");
+
+return;
+
+}
+
+let ancho = P/4;
+let largo = P/4;
+
+let areaMaxima = ancho * largo;
+
+let hectareas = areaMaxima / 10000;
+
+document.getElementById("resultado").innerHTML = `
+<b>Ancho óptimo:</b> ${ancho.toFixed(2)} m<br>
+<b>Largo óptimo:</b> ${largo.toFixed(2)} m<br>
+<b>Área máxima:</b> ${areaMaxima.toFixed(2)} m²<br>
+<b>Área en hectáreas:</b> ${hectareas.toFixed(2)} ha
+`;
+
+let datosX = [];
+let datosY = [];
+
+for(let x = 0; x <= P/2; x++){
+
+let area = x * ((P/2) - x);
+
+datosX.push(x);
+datosY.push(area);
+
+}
+
+if(grafica){
+grafica.destroy();
+}
+
+let ctx = document.getElementById("miGrafica");
+
+grafica = new Chart(ctx, {
+
+type: "line",
+
+data: {
+
+labels: datosX,
+
+datasets: [{
+
+label: "Área del terreno",
+
+data: datosY,
+
+borderColor: "green",
+
+backgroundColor: "rgba(0,128,0,0.3)",
+
+fill: true,
+
+tension: 0.3,
+
+borderWidth: 3
+
+}]
+
+},
+
+options: {
+
+responsive: true,
+
+plugins: {
+
+title: {
+
+display: true,
+
+text: "Función cuadrática A(x)=x(P/2−x)"
+
+}
+
+}
+
+}
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
